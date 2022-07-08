@@ -7,9 +7,9 @@ name = "PyWeatherKit"
 authors = [{name = "David Kopec", email = "david@oaksnow.com"}]
 version = "0.0.1"
 description = "A Python wrapper for the WeatherKit API"
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 readme = "README.md"
-license = "LICENSE"
+license = {file = "LICENSE"}
 keywords = ["weather", "kit", "weatherkit", "api"]
 dependencies = [
     "requests >=2.6",
