@@ -1,0 +1,23 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "PyWeatherKit"
+authors = [{name = "David Kopec", email = "david@oaksnow.com"}]
+version = "0.0.1"
+description = "A Python wrapper for the WeatherKit API"
+requires-python = ">=3.6"
+readme = "README.md"
+license = "LICENSE"
+keywords = ["weather", "kit", "weatherkit", "api"]
+dependencies = [
+    "requests >=2.6",
+    "pyjwt >= 2.4.0",
+]
+
+[project.urls]
+Home = "https://github.com/davecom/PyWeatherKit"
+
+[tool.flit.module]
+name = "weatherkit"
