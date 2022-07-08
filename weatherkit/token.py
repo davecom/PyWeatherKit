@@ -18,11 +18,11 @@ from time import time
 from dataclasses import dataclass
 
 
-# A token data class that has the token itself as well as the expiry time.
+# A token data class that has the token itself as well as the expiry time (in seconds since epoch).
 @dataclass
 class Token:
     token: str
-    expiry: int
+    expiry_time: int
 
 
 # Generate a JWT token for the weatherkit API

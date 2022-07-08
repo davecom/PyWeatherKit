@@ -40,7 +40,7 @@ class WKClient:
     # currentWeather, forecastDaily, forecastHourly, forecastNextHour, or weatherAlerts
     def get_weather(self, latitude: float, longitude: float, language: str = "en", timezone: str = "America/New_York",
                     dataSets: list[str] = ["currentWeather", "forecastDaily"]) -> dict:
-        if self.token.expiry < time():
+        if self.token.expiry_time < time():
             raise TokenExpiredError("Token has expired")
         url = f"https://weatherkit.apple.com/api/v1/weather/{language}/{latitude}/{longitude}"
         headers = {
