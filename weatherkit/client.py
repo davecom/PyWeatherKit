@@ -16,6 +16,8 @@
 import requests
 from weatherkit.token import generate_token
 from time import time
+from datetime import datetime
+from http import HTTPStatus
 
 
 class TokenExpiredError(Exception):
@@ -30,7 +32,8 @@ class WKClient:
     # *key_id* is the 10 digit id associated with the private key.
     # *service_id* is the custom id you specified when you created the service.
     def __init__(self, team_id: str, service_id: str, key_id: str, key_path: str, expiry: int = 3600):
-        self.token = generate_token(team_id, service_id, key_id, key_path, expiry)
+        self.token = generate_token(
+            team_id, service_id, key_id, key_path, expiry)
 
     # Returns the current weather for *latitude* and *longitude*.
     # *latitude* and *longitude* are floats.
@@ -38,20 +41,66 @@ class WKClient:
     # *timezone* is a string representing the timezone to use.
     # *dataSets* is a list of strings representing the data sets to return which can include:
     # currentWeather, forecastDaily, forecastHourly, forecastNextHour, or weatherAlerts
+    # *dailyStart* optional datetime parameter for specifying when the forecast should start
+    # *dailyEnd* optional datetime parameter for specifying when the forecast should end
     def get_weather(self, latitude: float, longitude: float, language: str = "en", timezone: str = "America/New_York",
-                    dataSets: list[str] = ["currentWeather", "forecastDaily"]) -> dict:
+                    dataSets: list[str] = ["currentWeather", "forecastDaily"], currentAsOf: datetime = None, dailyStart: datetime = None, dailyEnd: datetime = None) -> dict:
         if self.token.expiry_time < time():
             raise TokenExpiredError("Token has expired")
         url = f"https://weatherkit.apple.com/api/v1/weather/{language}/{latitude}/{longitude}"
         headers = {
             "Authorization": f"Bearer {self.token.token}"
         }
+        # Co-opted from stackoverflow answer: https://stackoverflow.com/questions/61463224/when-to-use-raise-for-status-vs-status-code-testing
+        retries = 3
+        retry_codes = [
+            HTTPStatus.TOO_MANY_REQUESTS,
+            HTTPStatus.INTERNAL_SERVER_ERROR,
+            HTTPStatus.BAD_GATEWAY,
+            HTTPStatus.SERVICE_UNAVAILABLE,
+            HTTPStatus.GATEWAY_TIMEOUT,
+        ]
         params = {
             "timezone": timezone,
-            "dataSets": ",".join(dataSets)
+            "dataSets": ",".join(dataSets),
         }
-        response = requests.get(url, headers=headers, params=params)
+        # Add extra (optional) params for historical data
+        # Apple expects datetimes to be in format like:
+        #   YYYY-MM-DDTHour:Minute:SecondZ (sent in utc)
+        if dailyStart is not None and dailyEnd is not None:
+            # Check if
+            if type(dailyStart) == datetime:
+                params["dailyStart"] = dailyStart.strftime("%Y-%m-%dT%XZ")
+            else:
+                raise (TypeError("dailyStart should be a datetime object"))
+            if type(dailyEnd) == datetime:
+                params["dailyEnd"] = dailyEnd.strftime("%Y-%m-%dT%XZ")
+            else:
+                raise (TypeError("dailyEnd should be a datetime object"))
+            if currentAsOf is not None:
+                if type(currentAsOf) == datetime:
+                    params["currentAsOf"] = currentAsOf.strftime(
+                        "%Y-%m-%dT%XZ")
+                else:
+                    raise (TypeError(f"currentAsOf should be a datetime object"))
+            else:
+                # User didn't select currentAsOf, assume is dailyStart
+                params["currentAsOf"] = dailyStart.strftime("%Y-%m-%dT%XZ")
+        for n in range(retries):
+            try:
+                response = requests.get(url, headers=headers, params=params)
+                response.raise_for_status()
 
+                break
+
+            except requests.HTTPError as exc:
+                code = exc.response.status_code
+
+                if code in retry_codes:
+                    # retry after n seconds
+                    time.sleep(n)
+                    continue
+
+                raise
+        response.raise_for_status()
         return response.json()
-
-
