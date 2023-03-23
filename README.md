@@ -11,7 +11,7 @@ So far it doesn't do much beyond retrieving a dictionary of weather data because
 pip install pyweatherkit
 ```
 
-## Usage
+## Standard Usage
 
 ```python
 from weatherkit.client import WKClient 
@@ -20,3 +20,18 @@ res = client.get_weather(44.50572, -73.24026)
 ```
 
 You can also specify the language of the response, the timezone, and the specific datasets you need.
+
+## Historical Data Pull 
+Only available from dates after 08/01/2021 (as of 2023-03-23)
+```python
+from weatherkit.client import WKClient
+from datetime import datetime
+
+# Set dates 
+dailyStart = datetime.strptime("2022-11-29", "%Y-%m-%d")
+dailyEnd = datetime.strptime("2022-11-30", "%Y-%m-%d")
+currentAsOf = datetime.strptime("2022-11-29", "%Y-%m-%d")
+
+client = WKClient("YOUR TEAM ID", "YOUR SERVICE ID", "YOUR KEY ID", "PATH TO YOUR PRIVATE KEY FILE")
+res = client.get_weather(44.50572, -73.24026, dailyStart=dailyStart, dailyEnd=dailyEnd, currentAsOf=currentAsOf)
+```
