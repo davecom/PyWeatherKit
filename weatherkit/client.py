@@ -18,6 +18,7 @@ from weatherkit.token import generate_token
 from time import time
 from datetime import datetime
 from http import HTTPStatus
+from weatherkit.forecast import DailyForecast, daily_forecast_dictionary_to_object
 
 
 class TokenExpiredError(Exception):
@@ -26,14 +27,23 @@ class TokenExpiredError(Exception):
 
 class WKClient:
     # Generates a WKClient that can connect to WeatherKit.
-    # *key_path* should be the path to a private key file.
-    # *expiry* is the number of seconds the client should be valid for.
     # *team_id* is the 10 digit Apple Developer team id
-    # *key_id* is the 10 digit id associated with the private key.
     # *service_id* is the custom id you specified when you created the service.
+    # *key_id* is the 10 digit id associated with the private key.
+    # *key_path* should be the path to a private key file
+    # *expiry* is the number of seconds the client should be valid for.
     def __init__(self, team_id: str, service_id: str, key_id: str, key_path: str, expiry: int = 3600):
         self.token = generate_token(
             team_id, service_id, key_id, key_path, expiry)
+    
+    # Returns a list of DailyForecast objects for *latitude* and *longitude*.
+    # *latitude* and *longitude* are floats.
+    # *language* is a string representing the language to use as a 2 letter code.
+    # *timezone* is a string representing the timezone to use.
+    # *imperial* is a boolean representing whether to use imperial units (default True)
+    def get_simple_forecast(self, latitude: float, longitude: float, language: str = "en", timezone: str = "America/New_York", imperial = True) -> list[DailyForecast]:
+        forecast = self.get_weather(latitude, longitude, language, timezone, dataSets=["forecastDaily"])
+        return [daily_forecast_dictionary_to_object(forecast, imperial) for forecast in forecast["forecastDaily"]["days"]]
 
     # Returns the current weather for *latitude* and *longitude*.
     # *latitude* and *longitude* are floats.
