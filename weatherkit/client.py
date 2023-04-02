@@ -15,7 +15,7 @@
 # limitations under the License.
 import requests
 from weatherkit.token import generate_token
-from time import time
+from time import time, sleep
 from datetime import datetime
 from http import HTTPStatus
 from weatherkit.forecast import DailyForecast, daily_forecast_dictionary_to_object
@@ -108,7 +108,7 @@ class WKClient:
 
                 if code in retry_codes:
                     # retry after n seconds
-                    time.sleep(n)
+                    sleep(n)
                     continue
 
                 raise

@@ -1,3 +1,7 @@
+### 0.0.3
+- Requires Python 3.11 for decoding abnormal ISO date format
+- Fixed sleep bug
+
 ### 0.0.2
 - Added support for historical data (thanks @atrautm1)
 - Added crypto to requirements of PyJWT
