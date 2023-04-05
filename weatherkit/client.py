@@ -41,9 +41,9 @@ class WKClient:
     # *language* is a string representing the language to use as a 2 letter code.
     # *timezone* is a string representing the timezone to use.
     # *imperial* is a boolean representing whether to use imperial units (default True)
-    def get_simple_forecast(self, latitude: float, longitude: float, language: str = "en", timezone: str = "America/New_York", imperial = True) -> list[DailyForecast]:
+    def get_simple_forecast(self, latitude: float, longitude: float, language: str = "en", timezone: str = "America/New_York", imperial = True, num_days = 10) -> list[DailyForecast]:
         forecast = self.get_weather(latitude, longitude, language, timezone, dataSets=["forecastDaily"])
-        return [daily_forecast_dictionary_to_object(forecast, imperial) for forecast in forecast["forecastDaily"]["days"]]
+        return [daily_forecast_dictionary_to_object(forecast, imperial) for forecast in forecast["forecastDaily"]["days"][:(min(len(forecast["forecastDaily"]["days"]), num_days))]]
 
     # Returns the current weather for *latitude* and *longitude*.
     # *latitude* and *longitude* are floats.

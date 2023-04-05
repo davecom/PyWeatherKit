@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "PyWeatherKit"
 authors = [{name = "David Kopec", email = "david@oaksnow.com"}]
-version = "0.0.3"
+version = "0.0.4"
 description = "A Python wrapper for the WeatherKit API"
 requires-python = ">=3.11"
 readme = "README.md"

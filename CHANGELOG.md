@@ -1,3 +1,6 @@
+### 0.0.4
+- Limit num_days for a simple forecast
+
 ### 0.0.3
 - Requires Python 3.11 for decoding abnormal ISO date format
 - Fixed sleep bug

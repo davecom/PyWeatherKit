@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='PyWeatherKit',
-    version='0.0.3',
+    version='0.0.4',
     packages=['weatherkit'],
     url='https://github.com/davecom/PyWeatherKit',
     license='Apache 2',

@@ -17,7 +17,7 @@ from argparse import ArgumentParser
 from weatherkit.client import WKClient
 
 def display_forecast(client: WKClient, latitude: float, longitude: float):
-    forecast = client.get_simple_forecast(latitude, longitude)
+    forecast = client.get_simple_forecast(latitude, longitude, num_days=7)
     for day in forecast:
         print(f"{day.day_of_week}: {day.daytime_icon} with a high of {round(day.temperature_high)} and a low of {round(day.temperature_low)}")
 
